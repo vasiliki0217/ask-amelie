@@ -55,6 +55,8 @@
     <button onclick="askAmelie()">Purr</button>
 
     <script>
+        const BASE_URL = window.location.origin.replace(/^http:/, 'https:');
+
         const handleKeyPress = (event) => {
             if (event.key === "Enter") {
                 event.preventDefault();
@@ -73,7 +75,6 @@
             inputField.value = "";
 
             try {
-                const BASE_URL = window.location.origin;
                 const response = await fetch(`${BASE_URL}/ask`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
