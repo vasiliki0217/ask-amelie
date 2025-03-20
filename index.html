@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ask Amelie the Cat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        input {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0px;
+            margin-bottom: 20px;
+        }
+
+        .chatbox {
+            width: 350px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+            background-color: #f9f9f9;
+            height: 300px;
+            overflow-y: auto;
+            margin-left: 240px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Ask Amelie the Cat</h1>
+    <div class="container">
+        <div class="chatbox" id="chatbox"></div>
+        <img src="/static/amelie.jpg" alt="amelie" class="amelie-img">
+    </div>
+    <input type="text" id="userInput" placeholder="Ask me anything, human..." onkeydown="handleKeyPress(event)">
+    <button onclick="askAmelie()">Purr</button>
+
+    <script>
+        const handleKeyPress = (event) => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                askAmelie();
+            }
+        }
+
+        const askAmelie = async () => {
+            const inputField = document.getElementById("userInput");
+            const chatbox = document.getElementById("chatbox");
+            const userMessage = inputField.value.trim();
+
+            if (!userMessage) return;
+
+            chatbox.innerHTML += `<p><strong>You:</strong> ${userMessage}</p>`;
+            inputField.value = "";
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/ask", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ question: userMessage })
+                });
+
+                const data = await response.json();
+                chatbox.innerHTML += `<p><strong>Amelie:</strong> ${data.answer}</p>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+
+            } catch (error) {
+                chatbox.innerHTML += `<p><strong>Amelie:</strong> Hiss... something went wrong!</p>`;
+                console.error("Error:", error);
+            }
+        }
+    </script>
+</body>
+
+</html>
